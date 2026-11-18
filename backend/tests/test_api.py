@@ -1,4 +1,5 @@
 import json
+import sqlite3
 from functools import partial
 from io import BytesIO
 from zipfile import ZipFile
@@ -25,6 +26,52 @@ def step_run(client, run_id):
         await client.app.state.engine.executions[run_id].task
 
     client.portal.call(finished)
+
+
+@pytest.mark.parametrize("concurrent_runs", [0, 17])
+def test_invalid_concurrency_leaves_workspace_uncreated(tmp_path, concurrent_runs):
+    database = tmp_path / "uncreated.sqlite3"
+    with pytest.raises(ValueError, match="Concurrent runs must be between 1 and 16"):
+        create_app(f"sqlite:///{database}", concurrent_runs=concurrent_runs)
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_invalid_provider_concurrency_preserves_budget(tmp_path, monkeypatch):
+    database = tmp_path / "workspace.sqlite3"
+    url = f"sqlite:///{database}"
+    with TestClient(create_app(url, budget_usd=8), base_url="http://localhost") as client:
+        assert client.get("/api/settings").json()["budget_usd"] == 8
+    monkeypatch.setenv("JAS_CONCURRENT_REQUESTS", "33")
+    with pytest.raises(ValueError, match="Concurrent provider requests must be between 1 and 32"):
+        create_app(url, budget_usd=10)
+    with sqlite3.connect(database) as connection:
+        assert connection.execute("SELECT ceiling FROM workspace").fetchone() == (8_000_000,)
+
+
+def test_storage_closes_even_if_model_shutdown_fails(tmp_path, monkeypatch):
+    app = create_app(f"sqlite:///{tmp_path}/cleanup.sqlite3")
+    closed = []
+
+    async def fail_close_models():
+        raise RuntimeError("Provider close failed")
+
+    def track_close(service, name):
+        close = service.close
+
+        def tracked():
+            close()
+            closed.append(name)
+
+        monkeypatch.setattr(service, "close", tracked)
+
+    monkeypatch.setattr(app.state.models, "close", fail_close_models)
+    track_close(app.state.research.environments, "environments")
+    track_close(app.state.extensions, "extensions")
+    track_close(app.state.db, "database")
+    with pytest.raises(RuntimeError, match="Provider close failed"):
+        with TestClient(app, base_url="http://localhost") as client:
+            assert client.get("/api/health").status_code == 200
+    assert closed == ["environments", "extensions", "database"]
 
 
 def test_routers_resolve_services_from_the_current_app(client, tmp_path, design):

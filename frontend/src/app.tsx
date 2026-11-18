@@ -1,11 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { Loading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
-import { useInputModality } from "@/hooks/use-input-modality";
 import Experiments from "@/pages/experiments";
 import Home from "@/pages/home";
 import Runs from "@/pages/runs";
@@ -21,48 +19,8 @@ const Watch = lazy(() => import("@/pages/watch"));
 const Examples = lazy(() => import("@/pages/examples"));
 const Matched = lazy(() => import("@/pages/matched"));
 const Gallery = lazy(() => import("@/pages/gallery"));
-const GalleryShell = lazy(() =>
-  import("@/pages/gallery").then((module) => ({
-    default: module.GalleryShell,
-  })),
-);
-const PublicExperiment = lazy(() => import("@/pages/public-experiment"));
-const GalleryAccount = lazy(() => import("@/pages/gallery-account"));
-const GalleryTerms = lazy(() => import("@/pages/gallery-terms"));
 
-export default function App() {
-  useInputModality();
-  if (
-    document
-      .querySelector('meta[name="jas-surface"]')
-      ?.getAttribute("content") === "gallery"
-  ) {
-    return (
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          <Route element={<GalleryShell />}>
-            <Route index element={<Gallery publicSurface />} />
-            <Route path="gallery" element={<Gallery publicSurface />} />
-            <Route path="gallery/account" element={<GalleryAccount />} />
-            <Route path="login" element={<GalleryAccount loginOnly />} />
-            <Route path="terms" element={<GalleryTerms />} />
-            <Route
-              path="p/:author/:slug/:version"
-              element={<PublicExperiment />}
-            />
-            <Route
-              path="*"
-              element={
-                <Empty title="Page not found">
-                  <Link to="/gallery">Browse experiments</Link>
-                </Empty>
-              }
-            />
-          </Route>
-        </Routes>
-      </Suspense>
-    );
-  }
+export default function WorkspaceApp() {
   return (
     <Routes>
       <Route

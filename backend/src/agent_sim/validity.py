@@ -515,7 +515,8 @@ def _preflight(specification: str, runner=None) -> dict:
         )
         for c in design.conditions:
             composition = c.parameters.composition
-            assert composition is not None
+            if composition is None:
+                raise ValueError(f"{c.name} requires resource composition rules")
             communicative = c.parameters.communication and bool(
                 set(c.parameters.communication_channels) & {"messages", "reports"}
             )

@@ -11,7 +11,7 @@ from .db import Measurement, ProviderCall, RecordedEvent, Turn, digest
 from .domain import Finding
 from .metrics import aggregate_metrics
 from .research import Research, event_dict
-from .research_quality import FORMULAS, outcome_value
+from .research_quality import FORMULAS, OutcomeUsage, outcome_value
 
 VERSION = 1
 LensKey = Literal["behavior", "communication"]
@@ -337,7 +337,11 @@ def capture_lens(
         if design.analysis_plan:
             with research.db.session() as session:
                 ledger = session.execute(
-                    select(ProviderCall.status, ProviderCall.charged).where(
+                    select(
+                        ProviderCall.status,
+                        ProviderCall.charged,
+                        ProviderCall.request_payload["unpriced"].as_boolean(),
+                    ).where(
                         ProviderCall.run_id == rid,
                         ProviderCall.turn <= cutoff,
                         ProviderCall.purpose.in_(
@@ -345,10 +349,11 @@ def capture_lens(
                         ),
                     )
                 ).all()
-            usage = {
+            usage: OutcomeUsage = {
                 "requests": len(ledger),
-                "charged": sum(c for _, c in ledger),
-                "partial": any(s in {"pending", "unknown"} for s, _ in ledger),
+                "charged": sum(charged for _, charged, _ in ledger),
+                "partial": any(status in {"pending", "unknown"} for status, _, _ in ledger),
+                "unpriced": any(bool(unpriced) for _, _, unpriced in ledger),
             }
             fact["analysis_plan"] = design.analysis_plan.model_dump()
             for outcome in design.analysis_plan.outcomes:

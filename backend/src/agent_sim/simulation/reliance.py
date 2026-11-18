@@ -198,9 +198,10 @@ class RelianceCommitments(DistributedCoordination):
         else:
             row = s["commitments"][o.key]
             row["relied_at"] = s["logical_time"]
-            grants = s["read_grants"].setdefault(o.artifact, [])
-            if o.promisor not in grants:
-                grants.append(o.promisor)
+            read_grants_by_artifact = s["read_grants"]
+            readers = read_grants_by_artifact.setdefault(o.artifact, [])
+            if o.promisor not in readers:
+                readers.append(o.promisor)
             kind = "commitment_relied"
         return Event(
             kind=kind,
@@ -216,7 +217,8 @@ class RelianceCommitments(DistributedCoordination):
         time = s["logical_time"] - 1
         for event in events:
             if event.kind == "alternative_chosen":
-                assert event.actor is not None
+                if event.actor is None:
+                    raise ValueError("A recorded choice must identify its actor")
                 s["choice_times"][event.actor] = time
         settled = []
         for o in self.commitments.opportunities:

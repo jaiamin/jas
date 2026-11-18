@@ -2,6 +2,7 @@ import asyncio
 import json
 import math
 from collections.abc import Callable, Iterator, Mapping
+from contextlib import AsyncExitStack
 from dataclasses import replace
 from decimal import Decimal
 from typing import Any, Literal, TypedDict, TypeVar
@@ -183,14 +184,25 @@ def _validation_detail(error: BaseException | None) -> str:
 
 
 class LanguageModels:
-    def __init__(self, db: Database, *, registry: ModelRegistry | None = None):
+    @staticmethod
+    def request_concurrency(value: int | None = None) -> int:
+        limit = int(setting("CONCURRENT_REQUESTS", "4")) if value is None else value
+        if not 1 <= limit <= 32:
+            raise ValueError("Concurrent provider requests must be between 1 and 32")
+        return limit
+
+    def __init__(
+        self,
+        db: Database,
+        *,
+        registry: ModelRegistry | None = None,
+        concurrent_requests: int | None = None,
+    ):
+        self.concurrency = self.request_concurrency(concurrent_requests)
         self.db = db
         self.registry = registry if registry is not None else ModelRegistry(db.engine.url.database)
         self.models: dict[str, Model] = {}
         self.retired_models: list[Model] = []
-        self.concurrency = int(setting("CONCURRENT_REQUESTS", "4"))
-        if not 1 <= self.concurrency <= 32:
-            raise ValueError("Concurrent provider requests must be between 1 and 32")
         self.capacity = asyncio.Semaphore(self.concurrency)
 
     def research_model(self, purpose: str) -> str:
@@ -563,10 +575,11 @@ class LanguageModels:
         self.models.clear()
 
     async def close(self) -> None:
-        for model in [*self.models.values(), *self.retired_models]:
-            client = getattr(model, "client", None)
-            if client is not None:
-                await client.close()
+        async with AsyncExitStack() as cleanup:
+            for model in reversed([*self.models.values(), *self.retired_models]):
+                client = getattr(model, "client", None)
+                if client is not None:
+                    cleanup.push_async_callback(client.close)
 
     def recover(self) -> None:
         with self.db.session.begin() as session:

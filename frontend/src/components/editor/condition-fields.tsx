@@ -8,7 +8,6 @@ import { HarnessFields } from "@/components/editor/harness-fields";
 import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
-import { MechanismFields } from "@/components/mechanism-fields";
 import { ModelPicker } from "@/components/model-picker";
 import { OptionSelect as Select } from "@/components/option-select";
 import {
@@ -38,6 +37,7 @@ import type {
   Parameters,
   Treatment,
 } from "@/lib/types";
+import { MechanismFields } from "./mechanism-fields";
 
 export function ConditionFields({
   design,

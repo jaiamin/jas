@@ -1,11 +1,13 @@
 """Public record v1: one frozen protocol and its reviewed evidence, never a workspace export."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import re
 from collections import Counter
 from collections.abc import Iterable
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import Field
 from sqlalchemy import select
@@ -14,9 +16,11 @@ from .comparisons import ComparisonRun, compare_runs
 from .db import ProviderCall, digest
 from .domain import Decision, Design, RecordedAdjudication, Strict
 from .metrics import aggregate_metrics
-from .research import Research
 from .research_quality import outcome_value
 from .simulation.environments import create_world
+
+if TYPE_CHECKING:
+    from .research import Research
 
 MAX_PUBLIC_BYTES = 25 * 1024 * 1024
 

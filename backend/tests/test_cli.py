@@ -1,3 +1,7 @@
+import asyncio
+import subprocess
+import sys
+
 import pytest
 from agent_sim import cli
 from fastapi.testclient import TestClient
@@ -64,6 +68,37 @@ def test_browser_opens_only_after_this_server_starts(monkeypatch):
     assert opened == []
 
 
+def test_gallery_cli_starts_without_importing_workspace_services(tmp_path, monkeypatch):
+    monkeypatch.delenv("JAS_GALLERY_S3_BUCKET", raising=False)
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            """
+import sys
+
+from agent_sim import cli
+from fastapi.testclient import TestClient
+
+def inspect_app(app, **kwargs):
+    client = TestClient(app, base_url="http://localhost")
+    assert client.get("/api/health").json()["surface"] == "gallery"
+    assert client.get("/api/settings").status_code == 404
+    workspace_modules = {"api", "assistants", "commands", "execution", "llm", "research"}
+    imported = {name for name in workspace_modules if f"agent_sim.{name}" in sys.modules}
+    assert not imported, imported
+
+cli.uvicorn.run = inspect_app
+sys.argv = ["jas", "gallery", "--data", sys.argv[1]]
+cli.main()
+""",
+            str(tmp_path / "gallery"),
+        ],
+        cwd=tmp_path,
+        check=True,
+    )
+
+
 def test_explicit_workspace_overrides_inherited_database(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     chosen = tmp_path / "chosen"
@@ -87,6 +122,24 @@ def test_headless_check_run_export_and_cross_workspace_replay(
     import json
 
     from agent_sim.domain import ScriptedHarness
+    from agent_sim.execution import Engine
+    from agent_sim.llm import LanguageModels
+
+    execution_loops = []
+    close_loops = []
+    start_study = Engine.start_study
+    close_models = LanguageModels.close
+
+    async def track_start(engine, study_id):
+        execution_loops.append(asyncio.get_running_loop())
+        return await start_study(engine, study_id)
+
+    async def track_close(models):
+        close_loops.append(asyncio.get_running_loop())
+        return await close_models(models)
+
+    monkeypatch.setattr(Engine, "start_study", track_start)
+    monkeypatch.setattr(LanguageModels, "close", track_close)
 
     monkeypatch.chdir(tmp_path)
     design.conditions[0].harness = ScriptedHarness(policy="commons_half_v1")
@@ -114,6 +167,7 @@ def test_headless_check_run_export_and_cross_workspace_replay(
     )
     cli.main()
     output = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert execution_loops == [close_loops[-1]]
     assert output[-1]["usage"]["requests"] == 0
     assert record.is_file()
     monkeypatch.setattr(

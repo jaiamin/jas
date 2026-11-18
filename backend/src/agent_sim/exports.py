@@ -36,11 +36,10 @@ def export_studies(research: Research, study_ids: list[str]) -> Path:
 
 def export_study(research: Research, study_id: str, *, download: bool = False) -> dict[str, object]:
     with research.db.read_snapshot():
-        payload = _export_study(research, study_id)
+        study = research.study(study_id)
+        payload = _export_study(research, study_id, study)
     if not download:
         return payload
-    study = payload["study"]
-    assert isinstance(study, dict)
     return portable_json(
         payload,
         {
@@ -58,8 +57,7 @@ def export_study(research: Research, study_id: str, *, download: bool = False) -
     )
 
 
-def _export_study(research: Research, study_id: str) -> dict[str, object]:
-    detail = research.study(study_id)
+def _export_study(research: Research, study_id: str, study: dict) -> dict[str, object]:
     with research.db.session() as session:
         revisions = session.scalars(
             select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
@@ -107,7 +105,7 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
         "version": 20,
         "research": research._findings(study_id),
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
-        "study": detail,
+        "study": study,
         "activations": [a for run in runs for a in research.activations(run.id)],
         "exposure": [research.exposure(run.id) for run in runs],
         "annotations": [

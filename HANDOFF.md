@@ -1,5 +1,39 @@
 # JAS handoff
 
+## Active work: Codebase quality
+
+- [x] Install Desloppify and its Codex skill, verify the local state is ignored,
+  and exclude disposable tooling and build directories.
+- [x] Establish separate Python and TypeScript baselines with clean scan scopes.
+- [x] Resolve and verify coherent batches, including 31 mechanical assertion
+  findings. Complete 20 independent blind assessments per language and
+  follow-up assessments for selected changed dimensions.
+- [x] Run repository checks and record the final scoped rescans.
+- [ ] Continue triage and the execution queues toward the 85 strict target.
+
+The initial root scan auto-selected Python and some detectors traversed installed
+dependencies despite the exclusion configuration. Use the tool's per-language
+scan paths for comparable scores. Keep maintained UI primitives, tests, and replay
+fixtures in scope. Scorecards and review evidence stay under `.desloppify/`.
+
+The backend scan ended at 81.1 strict and 84.2 objective, up from 83.4
+objective. The backend plan displays 81.2 strict after false-positive triage.
+The frontend scan went from 82.7 to 83.0 strict and from 84.8 to 84.9
+objective. The strict baselines are from reviews of the original code.
+
+All 2,016 backend tests, Ruff, formatting, ty, 164 frontend unit tests, frontend
+lint and the build passed. Forty-one workspace browser cases passed across the
+main run and a retry of the case that hit a screenshot disk error. Four
+hosted Gallery browser cases passed. The installed wheel booted both surfaces
+from a disposable directory and served bundled assets. The final backend suite
+used `PYTHONDONTWRITEBYTECODE=1` and `-o tmp_path_retention_policy=failed` to
+keep fixture disk usage bounded.
+
+Activate `.tools/desloppify/bin/activate` and run `desloppify --lang python next`
+at the repository root or `desloppify --lang typescript next` from `frontend/`.
+The backend observe report has been recorded and awaits full verification.
+Frontend triage starts at strategize. Draft PR is https://github.com/jaiamin/jas/pull/43.
+
 ## Completed documentation
 
 Public MVP docs are live at https://jas.mintlify.site, published through the Admin
@@ -96,7 +130,7 @@ Registry release, genuine seed corpus, live identity/keychain checks and outside
 acceptance remain launch gates; never equate fixture tests with those checks.
 
 Hosted deployment: `7b7962d4-2317-412d-9325-b0649b65806a` (SUCCESS).
-Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in publishing.py.
+Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in config.py.
 Platform project `f7e199d8-bd8b-4628-8527-d0d99c20519b`, production environment
 `b90e8e72-dde9-4b2e-aa50-1243debe2801`. The retired workspace and volume are gone.
 Gallery source is pinned to the tested commit; documentation-only pushes do not deploy.

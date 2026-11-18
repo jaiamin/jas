@@ -139,15 +139,13 @@ def operation_output(
     variants = []
     for operation in operations:
         payload = PAYLOADS[operation]
-        read = _read_type(decision.model_fields["action"].annotation)
-        if operation == "read_artifact" and read is None:
-            continue
         fields: dict[str, Any] = {"operation": (Literal.__getitem__(operation), ...)}
         if payload:
             name, model = payload
             if operation == "read_artifact":
-                assert read is not None
-                model = read
+                model = _read_type(decision.model_fields["action"].annotation)
+                if model is None:
+                    continue
             elif operation == "decide":
                 model = decision_output(decision, versions)
             elif operation == "verify":

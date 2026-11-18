@@ -1030,7 +1030,8 @@ class Design(DesignSpec):
         if scenario is None:
             return parameters
         result = parameters.model_copy(deep=True)
-        assert result.artifacts is not None
+        if result.artifacts is None:
+            raise ValueError("Scenario values require artifact workspace parameters")
         for obj in result.artifacts.objects:
             if obj.key in scenario.values:
                 obj.content = dict(scenario.values[obj.key])

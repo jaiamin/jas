@@ -125,8 +125,8 @@ export function RunViewer({
     (event) =>
       !agentView ||
       event.visibility === "public" ||
-      event.actor === perspective ||
-      event.target === perspective,
+      (event.visibility === "private" &&
+        (event.actor === perspective || event.target === perspective)),
   );
   const message = (event: Event) => /message|mail/.test(event.kind);
   const measurements = run.measurements.filter((value) => value.turn <= turn);

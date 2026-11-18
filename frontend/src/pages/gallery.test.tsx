@@ -138,6 +138,20 @@ test("my publications uses one card and requires confirmation before removing a 
     await screen.findByText("Please try again shortly."),
   ).toBeInTheDocument();
   expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+  fireEvent.click(
+    within(screen.getByRole("alertdialog")).getByRole("button", {
+      name: "Cancel",
+    }),
+  );
+  await waitFor(() =>
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Unpublish" }));
+  expect(await screen.findByRole("alertdialog")).toBeInTheDocument();
+  expect(
+    screen.queryByText("Please try again shortly."),
+  ).not.toBeInTheDocument();
+  expect(writes).toHaveLength(1);
 });
 
 test("an expired publishing token returns to sign-in without labelling browsing unavailable", async () => {

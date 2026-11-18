@@ -149,8 +149,8 @@ def qualify_world(package: ExtensionPackage, runner: Transition) -> None:
     horizon = create_world(short, parameters, 17, runner=runner)
     for _ in range(2):
         actor = horizon.actor()
-        require(actor is not None, "horizon actor")
-        assert actor is not None
+        if actor is None:
+            raise ValueError("Independent World qualification failed: horizon actor")
         horizon.step(actor, decision("wait"))
     require(
         (horizon.state["phase"], horizon.state["credits"], horizon.actor()) == (0, 1, None)

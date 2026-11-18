@@ -14,14 +14,15 @@ from urllib.parse import urlencode, urlparse
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from pydantic import Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .api import SameOriginMiddleware, invalid, invalid_request
 from .domain import Strict
 from .gallery import Gallery, token_hash
 from .gallery_storage import FileObjects, S3Objects
+from .http_middleware import SameOriginMiddleware, invalid, invalid_request
 from .paths import static_directory
 from .public_records import MAX_PUBLIC_BYTES, decode_record
 
@@ -81,8 +82,6 @@ def create_gallery_app(
         www_redirect=False,
     )
     app.add_exception_handler(ValueError, invalid)
-    from fastapi.exceptions import RequestValidationError
-
     app.add_exception_handler(RequestValidationError, invalid_request)
     capacity = asyncio.Semaphore(2)
     report_salt = secrets.token_bytes(32)

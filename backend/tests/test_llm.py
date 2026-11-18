@@ -1,6 +1,8 @@
 import asyncio
 import json
 from decimal import Decimal
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 from agent_sim.db import ProviderCall, Study, Workspace
@@ -8,6 +10,19 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from sqlalchemy import select
+
+
+def test_provider_close_attempts_all_clients_after_an_error(runtime, monkeypatch):
+    _, models, _, _ = runtime
+    failing = SimpleNamespace(close=AsyncMock(side_effect=RuntimeError("Provider close failed")))
+    retained = SimpleNamespace(close=AsyncMock())
+    monkeypatch.setattr(models, "models", {"current": SimpleNamespace(client=failing)})
+    monkeypatch.setattr(models, "retired_models", [SimpleNamespace(client=retained)])
+
+    with pytest.raises(RuntimeError, match="Provider close failed"):
+        asyncio.run(models.close())
+    failing.close.assert_awaited_once()
+    retained.close.assert_awaited_once()
 
 
 @pytest.mark.parametrize(

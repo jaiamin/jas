@@ -321,8 +321,11 @@ class ResearchTools:
                     and "environments" in data
                 ):
                     environments = data["environments"]
-                    custom_environments = data["custom_environments"]
-                    assert isinstance(environments, list) and isinstance(custom_environments, list)
+                    custom_environments = data.get("custom_environments")
+                    if not isinstance(environments, list) or not isinstance(
+                        custom_environments, list
+                    ):
+                        raise ValueError("Invalid recorded environment catalog")
                     record["operations"][index] = {
                         **operation,
                         "data": {
@@ -418,14 +421,13 @@ class ResearchTools:
                             )
                         },
                     }
-            if data is None:
+            if item is None or data is None:
                 operation.update(
                     status="rejected",
                     summary="Context is outside this conversation's captured scope or unavailable.",
                     data=None,
                 )
             else:
-                assert item is not None
                 try:
                     data = value_at_path(data, request.path)
                     if request.start is not None:
@@ -532,17 +534,15 @@ class ResearchTools:
             sources = [{"kind": "builtin", "id": source.environment, "hash": digest(template)}]
         elif isinstance(source, ProposalSource):
             previous = self.previous.get(source.analysis_id)
-            if not previous or not (previous.output or {}).get("design"):
+            saved_design = (previous.output or {}).get("design") if previous else None
+            if previous is None or not saved_design:
                 raise ValueError("Proposal outside captured scope")
-            assert previous.output is not None
-            design = Design.model_validate(previous.output["design"])
+            design = Design.model_validate(saved_design)
             condition = next((c for c in design.conditions if c.key == source.condition_key), None)
             if condition is None:
                 raise ValueError("Unknown proposal condition")
             seed = source.seed
-            sources = [
-                {"kind": "analysis", "id": previous.id, "hash": digest(previous.output["design"])}
-            ]
+            sources = [{"kind": "analysis", "id": previous.id, "hash": digest(saved_design)}]
         else:
             cutoff = self.record["scope"]["cutoffs"].get(source.run_id)
             if cutoff is None or source.turn > cutoff:
@@ -561,12 +561,13 @@ class ResearchTools:
         # World copies the JSON checkpoint. Never use an Engine, save, or provider here.
         world = self.research.world(design, condition.parameters, seed, state)
         initial = world.snapshot()
+        source_hash = digest(initial)
         actor = world.actor()
         observation = world.observe(actor) if actor else None
         data = {
             "hypothetical": True,
             "participant_calls": 0,
-            "source_checkpoint_hash": digest(initial),
+            "source_checkpoint_hash": source_hash,
             "design_hash": digest(design.model_dump()),
             "rule_version": world.version,
             "actor": actor,
@@ -640,7 +641,6 @@ class ResearchTools:
                 ),
             },
         )
-        assert digest(initial) == data["source_checkpoint_hash"]
-        if state is not None and digest(state) != data["source_checkpoint_hash"]:
+        if digest(initial) != source_hash or (state is not None and digest(state) != source_hash):
             raise RuntimeError("Probe changed its source checkpoint")
         return data, sources

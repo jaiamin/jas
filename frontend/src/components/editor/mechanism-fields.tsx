@@ -1,6 +1,4 @@
-import { ArtifactFields } from "@/components/artifact-fields";
 import { CommitmentFields } from "@/components/commitment-fields";
-import { CompositionFields } from "@/components/composition-fields";
 import { DistributedFields } from "@/components/distributed-fields";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -13,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { WorkflowFields } from "@/components/workflow-fields";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
+import { ArtifactFields } from "./artifact-fields";
+import { CompositionFields } from "./composition-fields";
 
 interface NumericField {
   key: string;

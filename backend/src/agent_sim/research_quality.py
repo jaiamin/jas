@@ -5,6 +5,7 @@ import math
 from collections import Counter
 from functools import lru_cache
 from itertools import product
+from typing import TypedDict
 
 from .comparisons import ComparisonRun, compare_runs
 from .db import digest
@@ -184,6 +185,13 @@ FORMULAS = {
 }
 
 
+class OutcomeUsage(TypedDict):
+    requests: int
+    charged: int
+    partial: bool
+    unpriced: bool
+
+
 def outcome_value(
     outcome: PlannedOutcome,
     design: Design,
@@ -191,7 +199,7 @@ def outcome_value(
     run: dict,
     metrics: dict,
     events: Counter,
-    usage: dict,
+    usage: OutcomeUsage,
 ) -> tuple[float | None, str | None]:
     if outcome.calculation == "manual":
         return None, outcome.manual_reason
@@ -205,9 +213,7 @@ def outcome_value(
         case "request_count":
             value = usage["requests"]
         case "cost_usd":
-            value = (
-                None if usage["partial"] or usage.get("unpriced") else usage["charged"] / 1_000_000
-            )
+            value = None if usage["partial"] or usage["unpriced"] else usage["charged"] / 1_000_000
         case "wait_count":
             value = events["coordination_wait"]
         case "message_count":
@@ -238,7 +244,7 @@ def findings_report(
     runs: list[dict],
     metrics: dict,
     events: dict,
-    usage: dict,
+    usage: dict[str, OutcomeUsage],
 ) -> dict:
     # An undeclared plan exposes registered results/effort, never pretends to preregister them.
     outcomes = (
@@ -306,7 +312,7 @@ def findings_report(
                 "condition": condition.name,
                 "requests": sum(usage[r["id"]]["requests"] for r in group),
                 "cost_usd": None
-                if any(usage[r["id"]].get("unpriced") for r in group)
+                if any(usage[r["id"]]["unpriced"] for r in group)
                 else sum(usage[r["id"]]["charged"] for r in group) / 1_000_000,
                 "partial": any(usage[r["id"]]["partial"] for r in group),
                 "committed_turns": sum(r["turn"] for r in group),

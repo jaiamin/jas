@@ -1,20 +1,23 @@
 """Local gallery client: OS-keychain tokens and explicit, bounded network requests."""
 
+from __future__ import annotations
+
 import json
-import os
 import sqlite3
 from pathlib import Path
-from urllib.parse import urlparse
+from typing import TYPE_CHECKING
 
 import httpx
 import keyring
 from keyring.errors import KeyringError
+from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 
+from .config import gallery_origin
 from .domain import Design
 from .public_records import MAX_PUBLIC_BYTES, encode_record, validate_record
-from .research import Research
 
-DEFAULT_GALLERY_ORIGIN = "https://gallery-production-b7633fcd.up.railway.app"
+if TYPE_CHECKING:
+    from .research import Research
 
 
 class GalleryError(ValueError):
@@ -27,24 +30,12 @@ class KeychainUnavailable(ValueError):
     pass
 
 
-def gallery_origin(value: str | None = None) -> str:
-    configured = value or os.getenv("JAS_GALLERY_URL") or DEFAULT_GALLERY_ORIGIN
-    origin = configured.rstrip("/")
-    parsed = urlparse(origin)
-    if (
-        not parsed.hostname
-        or parsed.scheme not in {"http", "https"}
-        or parsed.path
-        or parsed.query
-        or parsed.fragment
-        or parsed.username
-        or parsed.password
-        or (parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"})
-    ):
-        raise ValueError(
-            "Gallery URL must use HTTPS, or HTTP on localhost, without credentials or a path"
-        )
-    return origin
+class DeviceAuthorization(BaseModel):
+    device_code: str = Field(min_length=32, max_length=100)
+    user_code: str = Field(min_length=1)
+    verification_uri: AnyHttpUrl
+    expires_in: int = Field(gt=0, strict=True)
+    interval: int = Field(gt=0, strict=True)
 
 
 class Publisher:
@@ -76,6 +67,41 @@ class Publisher:
             raise ValueError(
                 "Could not remove the local gallery token from the OS keychain"
             ) from error
+
+    def begin_login(self) -> DeviceAuthorization:
+        # Check that secure storage is available before creating a device request.
+        self.token()
+        result = self.request("POST", "/auth/device", body={})
+        try:
+            return DeviceAuthorization.model_validate(result)
+        except ValidationError as error:
+            raise GalleryError("The gallery returned invalid sign-in details.") from error
+
+    def poll_login(self, device_code: str) -> bool:
+        result = self.request_object(
+            "POST", "/auth/device/token", body={"device_code": device_code}
+        )
+        if "access_token" not in result and result.get("status") == "pending":
+            return False
+        token = result.get("access_token")
+        if (
+            not isinstance(token, str)
+            or not token
+            or not token.isascii()
+            or not token.isprintable()
+            or " " in token
+        ):
+            raise GalleryError("The gallery returned invalid sign-in details.")
+        self.save_token(token)
+        return True
+
+    def request_object(
+        self, method: str, path: str, *, body: object = None, authenticated: bool = False
+    ) -> dict:
+        result = self.request(method, path, body=body, authenticated=authenticated)
+        if not isinstance(result, dict):
+            raise GalleryError("The gallery returned an invalid response.")
+        return result
 
     def request(
         self, method: str, path: str, *, body: object = None, authenticated: bool = False
@@ -117,7 +143,7 @@ class Publisher:
                             response.status_code,
                         )
                     return data
-        except (httpx.HTTPError, json.JSONDecodeError) as error:
+        except (httpx.HTTPError, json.JSONDecodeError, UnicodeError, RecursionError) as error:
             raise GalleryError(
                 "The gallery is temporarily unavailable. Your local experiments still work."
             ) from error
@@ -185,13 +211,19 @@ def download_fork(publisher: Publisher, target: str, research: Research) -> str:
     author, slug = parts[:2]
     version = int(parts[2][1:]) if len(parts) == 3 else None
     path = f"/api/gallery/{author}/{slug}"
-    manifest = publisher.request("GET", path + (f"?version={version}" if version else ""))
-    assert isinstance(manifest, dict)
-    version = manifest["publication"]["version"]
-    record = publisher.request("GET", f"{path}/record?version={version}")
-    assert isinstance(record, dict)
+    manifest = publisher.request_object("GET", path + (f"?version={version}" if version else ""))
+    publication = manifest.get("publication")
+    if not isinstance(publication, dict):
+        raise GalleryError("The gallery returned an invalid publication manifest.")
+    published_version = publication.get("version")
+    if type(published_version) is not int or published_version < 1:
+        raise GalleryError("The gallery returned an invalid publication version.")
+    if version is not None and published_version != version:
+        raise GalleryError("The gallery returned a different publication version.")
+    version = published_version
+    record = publisher.request_object("GET", f"{path}/record?version={version}")
     checksum = hashlib.sha256(encode_record(record)).hexdigest()
-    if checksum != manifest["publication"]["sha256"]:
+    if checksum != publication.get("sha256"):
         raise ValueError("Downloaded record does not match the immutable publication hash")
     lineage = {"author": author.lower(), "slug": slug, "version": version, "sha256": checksum}
     sid = fork_record(research, record, lineage)

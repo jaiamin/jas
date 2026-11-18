@@ -1,7 +1,6 @@
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -9,9 +8,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import NoResultFound
-from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from .access import BasicAuthMiddleware, access_credentials
 from .assistants import Assistants
@@ -20,6 +17,7 @@ from .db import Database
 from .domain import Strict
 from .environment_library import EnvironmentConflict
 from .execution import Engine
+from .http_middleware import SameOriginMiddleware, invalid, invalid_request
 from .llm import LanguageModels, ProviderFailure
 from .paths import static_directory
 from .providers import ModelRegistry
@@ -34,41 +32,9 @@ class ErrorResponse(Strict):
     detail: str | list[dict[str, Any]]
 
 
-class SameOriginMiddleware:
-    def __init__(self, app: ASGIApp) -> None:
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http":
-            await self.app(scope, receive, send)
-            return
-
-        async def secure_send(message: Message) -> None:
-            if message["type"] == "http.response.start":
-                headers = MutableHeaders(scope=message)
-                headers["X-Content-Type-Options"] = "nosniff"
-                headers["Referrer-Policy"] = "same-origin"
-            await send(message)
-
-        headers = Headers(scope=scope)
-        origin = headers.get("origin")
-        if scope["method"] not in ("GET", "HEAD", "OPTIONS") and origin:
-            allowed = {headers.get("host"), "localhost:5173", "127.0.0.1:5173"}
-            if urlparse(origin).netloc not in allowed:
-                response = JSONResponse(
-                    {"detail": "Cross-origin writes are not allowed"}, status_code=403
-                )
-                await response(scope, receive, secure_send)
-                return
-        await self.app(scope, receive, secure_send)
-
-
-async def invalid(_request: Request, error: Exception) -> JSONResponse:
-    return JSONResponse({"detail": str(error)}, status_code=422)
-
-
 async def gallery_error(_request: Request, error: Exception) -> JSONResponse:
-    assert isinstance(error, GalleryError)
+    if not isinstance(error, GalleryError):
+        raise error
     return JSONResponse({"detail": str(error)}, status_code=error.status_code)
 
 
@@ -80,19 +46,6 @@ async def provider_error(_request: Request, error: Exception) -> JSONResponse:
     return JSONResponse({"detail": str(error)}, status_code=409)
 
 
-async def invalid_request(_request: Request, error: Exception) -> JSONResponse:
-    assert isinstance(error, RequestValidationError)
-    return JSONResponse(
-        {
-            "detail": [
-                {"loc": issue["loc"], "msg": issue["msg"], "type": issue["type"]}
-                for issue in error.errors()
-            ]
-        },
-        status_code=422,
-    )
-
-
 def create_app(
     database_url: str | None = None,
     *,
@@ -101,6 +54,11 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     credentials = access_credentials()
+    concurrency = (
+        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3"))
+    )
+    Engine.validate_concurrency(concurrency)
+    concurrent_requests = LanguageModels.request_concurrency()
     database_url = database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3")
     registry = ModelRegistry(make_url(database_url).database)
     ceiling = budget_usd
@@ -112,26 +70,22 @@ def create_app(
         database_url,
         round(ceiling * 1_000_000),
     )
-    models = LanguageModels(db, registry=registry)
+    models = LanguageModels(db, registry=registry, concurrent_requests=concurrent_requests)
     research = Research(db, models)
-    engine = Engine(
-        db,
-        research,
-        models,
-        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
-    )
+    engine = Engine(db, research, models, concurrency)
     assistants = Assistants(db, research, models)
     extensions = research.extensions
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
-        yield
-        await engine.close()
-        await assistants.close()
-        await models.close()
-        research.environments.close()
-        extensions.close()
-        db.close()
+        async with AsyncExitStack() as cleanup:
+            cleanup.callback(db.close)
+            cleanup.callback(extensions.close)
+            cleanup.callback(research.environments.close)
+            cleanup.push_async_callback(models.close)
+            cleanup.push_async_callback(assistants.close)
+            cleanup.push_async_callback(engine.close)
+            yield
 
     app = FastAPI(
         title="JAS",

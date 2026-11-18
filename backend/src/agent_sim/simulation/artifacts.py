@@ -9,7 +9,6 @@ from typing import Any
 from pydantic import create_model
 
 from ..domain import (
-    Action,
     ArtifactObject,
     ArtifactRules,
     CheckArtifacts,
@@ -78,9 +77,12 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             raise ValueError("Artifact operation is unavailable")
         return obj
 
+    def _read_available(self, actor: str) -> bool:
+        return self.actor() == actor
+
     def read(self, actor: str, request: ReadArtifact) -> dict[str, Any]:
         """Pure actor-scoped read, usable by the harness and by recorded World actions."""
-        if self.actor() != actor:
+        if not self._read_available(actor):
             raise ValueError("Artifact operation is unavailable")
         self.accessible(actor, request.artifact)
         versions = self.state["artifacts"][request.artifact]["versions"]
@@ -256,9 +258,6 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
         ):
             paths.append(["last_result"])
         return paths
-
-    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
-        raise ValueError("Artifact workspace requires an artifact decision")
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         return self._step(actor, decision)

@@ -93,6 +93,23 @@ def protocol(*, timing="phased_simultaneous", shared=False, delay=2):
     }
 
 
+def test_value_scenario_requires_artifact_parameters():
+    payload = protocol()
+    values = {f"values_{actor}": dict(table) for actor, table in zip(ACTORS, VALUES, strict=True)}
+    values["values_iris"]["cedar"] = 22
+    payload["scenarios"] = [{"seed": 93, "name": "Counterfactual", "values": values}]
+    design = Design.model_validate(payload)
+    parameters = design.conditions[0].parameters
+
+    result = design.scenario_parameters(parameters, 93)
+    assert result.artifacts is not None
+    assert parameters.artifacts is not None
+    assert result.artifacts.objects[0].content["cedar"] == 22
+    assert parameters.artifacts.objects[0].content["cedar"] == 9
+    with pytest.raises(ValueError, match="artifact workspace parameters"):
+        design.scenario_parameters(parameters.model_copy(update={"artifacts": None}), 93)
+
+
 def retain(case, **data):
     folder = os.getenv("T10_RAW_DIR")
     if folder:
