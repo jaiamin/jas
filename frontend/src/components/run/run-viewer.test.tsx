@@ -59,6 +59,17 @@ test("agent perspective never renders another agent's private observation, world
         text: "ADDRESSED_TO_ME",
         data: {},
       },
+      {
+        id: 3,
+        turn: 2,
+        round: 1,
+        kind: "research_note",
+        actor: "a",
+        target: "a",
+        visibility: "researcher",
+        text: "RESEARCHER_EVENT_CANARY",
+        data: {},
+      },
     ],
   };
   const view = render(
@@ -81,10 +92,20 @@ test("agent perspective never renders another agent's private observation, world
     "OTHER_OBSERVATION_CANARY",
     "OTHER_WORLD_CANARY",
     "OTHER_EVENT_CANARY",
+    "RESEARCHER_EVENT_CANARY",
     "98123",
   ])
     expect(view.container).not.toHaveTextContent(forbidden);
   expect(
     screen.queryByRole("complementary", { name: "World and metrics" }),
   ).not.toBeInTheDocument();
+  view.rerender(
+    <RunViewer
+      run={runDetail}
+      turn={2}
+      evidence={personal}
+      onPerspective={vi.fn()}
+    />,
+  );
+  expect(view.container).toHaveTextContent("RESEARCHER_EVENT_CANARY");
 });
