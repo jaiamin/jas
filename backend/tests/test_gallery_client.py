@@ -1,7 +1,8 @@
 import httpx
 import pytest
 from agent_sim.api import create_app
-from agent_sim.publishing import DEFAULT_GALLERY_ORIGIN, GalleryError, Publisher, download_fork
+from agent_sim.config import DEFAULT_GALLERY_ORIGIN
+from agent_sim.publishing import GalleryError, Publisher, download_fork
 from fastapi.testclient import TestClient
 
 

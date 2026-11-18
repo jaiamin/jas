@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator, model_validator
 
+from .config import gallery_origin
 from .domain import ModelId, Strict
 
 PRICES: dict[str, tuple[float, float]] = {
@@ -70,8 +71,6 @@ class WorkspacePreferences(Strict):
     def valid_gallery(cls, value: str | None) -> str | None:
         if not value:
             return None
-        from .publishing import gallery_origin
-
         return gallery_origin(value)
 
 

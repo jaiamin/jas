@@ -1,21 +1,23 @@
 """Local gallery client: OS-keychain tokens and explicit, bounded network requests."""
 
+from __future__ import annotations
+
 import json
-import os
 import sqlite3
 from pathlib import Path
-from urllib.parse import urlparse
+from typing import TYPE_CHECKING
 
 import httpx
 import keyring
 from keyring.errors import KeyringError
 from pydantic import AnyHttpUrl, BaseModel, Field, ValidationError
 
+from .config import gallery_origin
 from .domain import Design
 from .public_records import MAX_PUBLIC_BYTES, encode_record, validate_record
-from .research import Research
 
-DEFAULT_GALLERY_ORIGIN = "https://gallery-production-b7633fcd.up.railway.app"
+if TYPE_CHECKING:
+    from .research import Research
 
 
 class GalleryError(ValueError):
@@ -34,26 +36,6 @@ class DeviceAuthorization(BaseModel):
     verification_uri: AnyHttpUrl
     expires_in: int = Field(gt=0, strict=True)
     interval: int = Field(gt=0, strict=True)
-
-
-def gallery_origin(value: str | None = None) -> str:
-    configured = value or os.getenv("JAS_GALLERY_URL") or DEFAULT_GALLERY_ORIGIN
-    origin = configured.rstrip("/")
-    parsed = urlparse(origin)
-    if (
-        not parsed.hostname
-        or parsed.scheme not in {"http", "https"}
-        or parsed.path
-        or parsed.query
-        or parsed.fragment
-        or parsed.username
-        or parsed.password
-        or (parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"})
-    ):
-        raise ValueError(
-            "Gallery URL must use HTTPS, or HTTP on localhost, without credentials or a path"
-        )
-    return origin
 
 
 class Publisher:
