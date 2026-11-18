@@ -6,7 +6,7 @@ import math
 import os
 import time
 import webbrowser
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 
 from .db import Database
@@ -23,25 +23,25 @@ def emit(value: object) -> None:
 
 
 @contextmanager
-def services(database_url: str):
+def services(database_url: str, runner: asyncio.Runner):
     from sqlalchemy.engine import make_url
 
     from .providers import ModelRegistry
 
+    concurrent_requests = LanguageModels.request_concurrency()
     registry = ModelRegistry(make_url(database_url).database)
     ceiling = registry.configuration.workspace_budget_usd
     if ceiling is None:
         ceiling = float(os.getenv("JAS_BUDGET_USD", "25"))
-    db = Database(database_url, ceiling=round(ceiling * 1_000_000))
-    models = LanguageModels(db, registry=registry)
-    research = Research(db, models)
-    try:
+    with ExitStack() as cleanup:
+        db = Database(database_url, ceiling=round(ceiling * 1_000_000))
+        cleanup.callback(db.close)
+        models = LanguageModels(db, registry=registry, concurrent_requests=concurrent_requests)
+        research = Research(db, models)
+        cleanup.callback(research.extensions.close)
+        cleanup.callback(research.environments.close)
+        cleanup.callback(lambda: runner.run(models.close()))
         yield db, models, research
-    finally:
-        asyncio.run(models.close())
-        research.environments.close()
-        research.extensions.close()
-        db.close()
 
 
 def read_file(path: Path) -> dict:
@@ -103,7 +103,7 @@ def execute(args, database_url: str) -> None:
             Publisher(args.gallery).request("POST", "/api/gallery", body=record, authenticated=True)
         )
         return
-    with services(database_url) as (db, models, research):
+    with asyncio.Runner() as runner, services(database_url, runner) as (db, models, research):
         if args.command == "fork":
             sid = download_fork(
                 Publisher(args.gallery or models.registry.configuration.preferences.gallery_url),
@@ -143,7 +143,7 @@ def execute(args, database_url: str) -> None:
             finally:
                 await engine.close()
 
-        asyncio.run(run())
+        runner.run(run())
         study = research.study(sid)
         emit(
             {

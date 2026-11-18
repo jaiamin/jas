@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -54,6 +54,11 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     credentials = access_credentials()
+    concurrency = (
+        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3"))
+    )
+    Engine.validate_concurrency(concurrency)
+    concurrent_requests = LanguageModels.request_concurrency()
     database_url = database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3")
     registry = ModelRegistry(make_url(database_url).database)
     ceiling = budget_usd
@@ -65,26 +70,22 @@ def create_app(
         database_url,
         round(ceiling * 1_000_000),
     )
-    models = LanguageModels(db, registry=registry)
+    models = LanguageModels(db, registry=registry, concurrent_requests=concurrent_requests)
     research = Research(db, models)
-    engine = Engine(
-        db,
-        research,
-        models,
-        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
-    )
+    engine = Engine(db, research, models, concurrency)
     assistants = Assistants(db, research, models)
     extensions = research.extensions
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
-        yield
-        await engine.close()
-        await assistants.close()
-        await models.close()
-        research.environments.close()
-        extensions.close()
-        db.close()
+        async with AsyncExitStack() as cleanup:
+            cleanup.callback(db.close)
+            cleanup.callback(extensions.close)
+            cleanup.callback(research.environments.close)
+            cleanup.push_async_callback(models.close)
+            cleanup.push_async_callback(assistants.close)
+            cleanup.push_async_callback(engine.close)
+            yield
 
     app = FastAPI(
         title="JAS",

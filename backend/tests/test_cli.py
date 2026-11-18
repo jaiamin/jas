@@ -1,3 +1,4 @@
+import asyncio
 import subprocess
 import sys
 
@@ -121,6 +122,24 @@ def test_headless_check_run_export_and_cross_workspace_replay(
     import json
 
     from agent_sim.domain import ScriptedHarness
+    from agent_sim.execution import Engine
+    from agent_sim.llm import LanguageModels
+
+    execution_loops = []
+    close_loops = []
+    start_study = Engine.start_study
+    close_models = LanguageModels.close
+
+    async def track_start(engine, study_id):
+        execution_loops.append(asyncio.get_running_loop())
+        return await start_study(engine, study_id)
+
+    async def track_close(models):
+        close_loops.append(asyncio.get_running_loop())
+        return await close_models(models)
+
+    monkeypatch.setattr(Engine, "start_study", track_start)
+    monkeypatch.setattr(LanguageModels, "close", track_close)
 
     monkeypatch.chdir(tmp_path)
     design.conditions[0].harness = ScriptedHarness(policy="commons_half_v1")
@@ -148,6 +167,7 @@ def test_headless_check_run_export_and_cross_workspace_replay(
     )
     cli.main()
     output = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert execution_loops == [close_loops[-1]]
     assert output[-1]["usage"]["requests"] == 0
     assert record.is_file()
     monkeypatch.setattr(

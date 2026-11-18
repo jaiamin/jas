@@ -37,13 +37,17 @@ class AdjudicationPaused(Exception):
 
 
 class Engine:
+    @staticmethod
+    def validate_concurrency(concurrency: int) -> None:
+        if not 1 <= concurrency <= 16:
+            raise ValueError("Concurrent runs must be between 1 and 16")
+
     def __init__(
         self, db: Database, research: Research, models: LanguageModels, concurrency: int = 3
     ):
+        self.validate_concurrency(concurrency)
         self.db, self.research, self.models = db, research, models
         self.executions: dict[str, Execution] = {}
-        if not 1 <= concurrency <= 16:
-            raise ValueError("Concurrent runs must be between 1 and 16")
         self.concurrency = concurrency
         self.capacity = asyncio.Semaphore(concurrency)
         self.start_lock = asyncio.Lock()
