@@ -446,3 +446,18 @@ Inspected both generated banners, checked PNG dimensions/transparency, SVG XML
 and source glyph paths, and validated the Mintlify source. The app build/lint
 passed after removing rotations. Preview stays on 8080. No live docs publication
 or deployment; branding remains in the draft font-preview PR for review.
+
+## PR 42 CI repair (in progress)
+
+Hosted run 44154823973 passed frontend/workflows but failed backend type checking
+because the Gallery extra was not installed, and the deployment smoke failed
+renaming an image-layer directory on OverlayFS (EXDEV). Backend CI and contributor
+setup now install the existing Gallery extra. The disposable smoke recreates its
+empty directory instead of renaming it, retaining symlink/ownership rejection,
+privilege dropping, auth, runtime and restart-persistence assertions.
+
+Local checks passed: Ruff, touched-script formatting, Actionlint (including shell
+checks), Gallery storage regression, full ty check with frozen dependencies and
+fresh workspace/gallery image builds and production smokes. Full backend tests
+are still running in `.tools/pr42-backend-tests.log`; hosted CI must pass at the
+new head before completion. No app/UI change, paid calls, user data or deployment.

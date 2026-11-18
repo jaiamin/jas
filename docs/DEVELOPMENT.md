@@ -3,7 +3,7 @@
 Use Python 3.13+, uv, Node 24+ and pnpm 12 with the committed lockfiles.
 
 ```sh
-uv sync --frozen
+uv sync --frozen --extra gallery
 pnpm --dir frontend install --frozen-lockfile
 pnpm --dir frontend build
 uv run jas --workspace ./data --port 8080 --no-browser

@@ -35,14 +35,15 @@ import subprocess
 import sys
 from pathlib import Path
 data = Path("/app/data")
-data.rename("/app/original-data")
+# Recreate this empty fixture: OverlayFS cannot rename an image-layer directory.
+data.rmdir()
 data.symlink_to("/app", target_is_directory=True)
 owner = Path("/app").stat().st_uid
 command = [sys.executable, "-m", "agent_sim.container_entrypoint", sys.executable, "-c", "pass"]
 assert subprocess.run(command, capture_output=True).returncode != 0
 assert Path("/app").stat().st_uid == owner
 data.unlink()
-Path("/app/original-data").rename(data)
+data.mkdir()
 os.chown(data, 10002, 10002)
 assert subprocess.run(command, capture_output=True).returncode != 0
 assert data.stat().st_uid == 10002
