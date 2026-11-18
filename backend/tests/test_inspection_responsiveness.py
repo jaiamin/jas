@@ -3,11 +3,21 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
+import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 
 
-def test_run_inspection_does_not_hold_the_request_loop(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    ("path", "method"),
+    [
+        ("/api/runs/{run_id}", "run"),
+        ("/api/runs/{run_id}/turns/0", "evidence"),
+        ("/api/runs/{run_id}/exposure", "exposure"),
+        ("/api/studies/{study_id}/exposure", "exposure"),
+    ],
+)
+def test_inspection_does_not_hold_the_request_loop(tmp_path, monkeypatch, path, method):
     app = create_app(f"sqlite:///{tmp_path}/inspection.sqlite3", static_dir=tmp_path / "static")
     with TestClient(app, base_url="http://localhost") as client:
         design = next(
@@ -19,20 +29,22 @@ def test_run_inspection_does_not_hold_the_request_loop(tmp_path, monkeypatch):
         design["conditions"] = design["conditions"][:1]
         saved = client.post("/api/studies", json={"design": design})
         assert saved.status_code == 201, saved.text
-        study = client.get(f"/api/studies/{saved.json()['id']}").json()
+        study_id = saved.json()["id"]
+        study = client.get(f"/api/studies/{study_id}").json()
         run_id = study["runs"][0]["id"]
-        expected = client.get(f"/api/runs/{run_id}").json()
+        url = path.format(run_id=run_id, study_id=study_id)
+        expected = client.get(url).json()
         entered, release = threading.Event(), threading.Event()
-        read_run = app.state.research.run
+        read = getattr(app.state.research, method)
 
-        def held_read(key):
+        def held_read(*args, **kwargs):
             entered.set()
-            assert release.wait(5), "Run inspection was never released"
-            return read_run(key)
+            assert release.wait(5), "Inspection was never released"
+            return read(*args, **kwargs)
 
-        monkeypatch.setattr(app.state.research, "run", held_read)
+        monkeypatch.setattr(app.state.research, method, held_read)
         with ThreadPoolExecutor(max_workers=2) as pool:
-            inspection = pool.submit(client.get, f"/api/runs/{run_id}")
+            inspection = pool.submit(client.get, url)
             try:
                 assert entered.wait(2), "The run request did not enter its real read"
                 health = pool.submit(client.get, "/api/health")

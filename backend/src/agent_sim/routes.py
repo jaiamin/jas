@@ -408,14 +408,15 @@ async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep)
 
 
 @router.get("/api/studies/{study_id}/exposure")
-async def study_exposure(
+def study_exposure(
     study_id: str, revision: int | None = None, *, research: ResearchDep
 ) -> dict[str, Any]:
-    detail = await asyncio.to_thread(research.study, study_id, revision)
-    return {
-        "revision": detail["revision"],
-        "runs": [research.exposure(run["id"]) for run in detail["runs"]],
-    }
+    with research.db.read_snapshot():
+        detail = research.study(study_id, revision)
+        return {
+            "revision": detail["revision"],
+            "runs": [research.exposure(run["id"]) for run in detail["runs"]],
+        }
 
 
 @router.get("/api/studies/{study_id}/findings")
@@ -479,10 +480,11 @@ def get_run(run_id: str, *, research: ResearchDep) -> JSONResponse:
 
 
 @router.get("/api/runs/{run_id}/exposure")
-async def get_exposure(
+def get_exposure(
     run_id: str, through_turn: int | None = None, *, research: ResearchDep
 ) -> dict[str, Any]:
-    return research.exposure(run_id, through_turn)
+    with research.db.read_snapshot():
+        return research.exposure(run_id, through_turn)
 
 
 @router.get("/api/requests/{call_id}")
@@ -505,8 +507,9 @@ async def request_evidence(call_id: str, *, db: DatabaseDep) -> dict[str, Any]:
 
 
 @router.get("/api/runs/{run_id}/turns/{number}")
-async def get_evidence(run_id: str, number: int, *, research: ResearchDep) -> dict[str, Any]:
-    return research.evidence(run_id, number)
+def get_evidence(run_id: str, number: int, *, research: ResearchDep) -> dict[str, Any]:
+    with research.db.read_snapshot():
+        return research.evidence(run_id, number)
 
 
 @router.post("/api/runs/{run_id}/control")
