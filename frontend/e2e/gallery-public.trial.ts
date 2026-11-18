@@ -1,5 +1,26 @@
 import { expect, test } from "@playwright/test";
 
+test("Gallery honors system dark mode when browser storage is unavailable", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new DOMException(
+          "Browser storage is unavailable",
+          "SecurityError",
+        );
+      },
+    });
+  });
+  await page.goto("/gallery");
+  await expect(page.locator("html")).toHaveClass("dark");
+  await expect(
+    page.getByRole("link", { name: /A recorded commons experiment/ }),
+  ).toBeVisible();
+});
+
 for (const theme of ["light", "dark"]) {
   test(`anonymous phone reading loads one recording on demand and supports playback · ${theme}`, async ({
     page,
